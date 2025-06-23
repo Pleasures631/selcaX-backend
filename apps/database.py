@@ -5,10 +5,15 @@ from sqlalchemy import text
 DATABASE_URL = "mysql+pymysql://root:Alz081897997!@localhost:3306/selcashoes"
 
 engine = create_engine(DATABASE_URL)
-
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-
 Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 # Buat tes koneksi

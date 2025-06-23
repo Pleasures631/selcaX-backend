@@ -1,7 +1,13 @@
-from sqlalchemy import Column, Integer, String, DateTime, DECIMAL
+import enum
+from sqlalchemy import Column, Integer, String, DateTime, DECIMAL, Enum
 from apps.database import Base
 from datetime import datetime
 from uuid import uuid4
+
+# class TypeEnum(enum.Enum):
+
+
+
 
 class Order(Base):
     __tablename__ = "order"
@@ -9,7 +15,8 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True)  # internal PK
     order_id = Column(String(30), unique=True, nullable=False, default=lambda: "ORD-" + uuid4().hex[:8].upper())
     name = Column(String(50))
-    order_date = Column(DateTime, default=datetime.utcnow)
+    order_date = Column(DateTime, default=datetime.now)
     amount = Column(DECIMAL(18, 2))
     qty = Column(String(50))
+    type = Column(Enum)
 
