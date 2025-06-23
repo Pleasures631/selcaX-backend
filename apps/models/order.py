@@ -4,9 +4,15 @@ from apps.database import Base
 from datetime import datetime
 from uuid import uuid4
 
-# class TypeEnum(enum.Enum):
+class TypeEnum(enum.Enum):
+    SH = 'sepatu'
+    TS = 'tas'
+    TP = 'topi'
 
-
+class MaterialEnum(enum.Enum):
+    KL = 'kulit'
+    SD = 'suede'
+    KV = 'kanvas'
 
 
 class Order(Base):
@@ -18,5 +24,6 @@ class Order(Base):
     order_date = Column(DateTime, default=datetime.now)
     amount = Column(DECIMAL(18, 2))
     qty = Column(String(50))
-    type = Column(Enum)
+    type = Column(Enum(TypeEnum), nullable=False)
+    material = Column(Enum(MaterialEnum), nullable=False)
 
