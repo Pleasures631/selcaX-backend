@@ -5,14 +5,19 @@ from datetime import datetime
 from uuid import uuid4
 
 class TypeEnum(enum.Enum):
-    SH = 'sepatu'
-    TS = 'tas'
-    TP = 'topi'
+    SH = 'Sepatu'
+    TS = 'Tas'
+    TP = 'Topi'
 
 class MaterialEnum(enum.Enum):
-    KL = 'kulit'
-    SD = 'suede'
-    KV = 'kanvas'
+    KL = 'Kulit'
+    SD = 'Suede'
+    KV = 'Kanvas'
+
+class StatusEnum(enum.Enum):
+    CP = 'Complete'
+    CL = 'Cancel'
+    IP = 'In Progress'
 
 
 class Order(Base):
@@ -26,4 +31,5 @@ class Order(Base):
     qty = Column(String(50))
     type = Column(Enum(TypeEnum), nullable=False)
     material = Column(Enum(MaterialEnum), nullable=False)
+    status = Column(Enum(StatusEnum), nullable=False)
 
