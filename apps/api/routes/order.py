@@ -3,13 +3,14 @@ from sqlalchemy.orm import Session
 from apps.database import get_db
 from apps.models.order import Order, StatusEnum
 from apps.schemas.order import OrderCreate, UpdateOrderStatus
+from apps.core.deps import get_current_user
 import sys
 
 router = APIRouter()
 
 #create order
 @router.post("/order/create")
-def create_order(order: OrderCreate, db:Session = Depends(get_db)):
+def create_order(order: OrderCreate, db:Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     new_order = Order(
         name = order.name,
         amount = order.amount,
@@ -26,7 +27,7 @@ def create_order(order: OrderCreate, db:Session = Depends(get_db)):
 
 #get order by id
 @router.get("/order/{order_id}")
-def get_order_by_id(order_id: str, db:Session = Depends(get_db)):
+def get_order_by_id(order_id: str, db:Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     order = db.query(Order).filter(order_id == order_id).first()
 
     if not order:
@@ -36,14 +37,14 @@ def get_order_by_id(order_id: str, db:Session = Depends(get_db)):
 
 #get all data orders
 @router.get("/orders")
-def get_all_orders(db:Session = Depends(get_db)):
+def get_all_orders(db:Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     order = db.query(Order).all()
 
     return order
 
 #update status order
 @router.put("/order/{order_id}/status")
-def update_order(order_id: str, new_status: UpdateOrderStatus,  db:Session = Depends(get_db)):
+def update_order(order_id: str, new_status: UpdateOrderStatus,  db:Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
 
     order = db.query(Order).filter(Order.order_id == order_id).first()
 
@@ -59,7 +60,7 @@ def update_order(order_id: str, new_status: UpdateOrderStatus,  db:Session = Dep
 
 #delete order
 @router.delete("/order/{order_id}/delete")
-def delete_order(order_id: str, db:Session = Depends(get_db)):
+def delete_order(order_id: str, db:Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     order = db.query(Order).filter(Order.order_id == order_id).first()
 
     if not order:

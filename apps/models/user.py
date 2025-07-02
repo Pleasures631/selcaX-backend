@@ -11,4 +11,4 @@ class User(Base):
     phone = Column(String(20), unique=True, nullable=True)
     password_hash = Column(String(255), nullable=False)
     address = Column(String(255), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
