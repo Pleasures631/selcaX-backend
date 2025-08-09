@@ -10,14 +10,18 @@ router = APIRouter()
 
 #create order
 @router.post("/order/create")
-def create_order(order: OrderCreate, db:Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def create_order(order: OrderCreate, db:Session = Depends(get_db)):
     new_order = Order(
-        name = order.name,
+        order_id = order.order_id,
+        item_name = order.item_name,
         amount = order.amount,
         qty = order.qty,
-        type = order.type,
-        material = order.material,
-        status = 'IP'
+        cust_name = order.cust_name,
+        cust_address = order.cust_address,
+        notes = order.notes,
+        # type = order.type,
+        # material = order.material,
+        status = order.status
     )
     db.add(new_order)
     db.commit()
@@ -37,10 +41,14 @@ def get_order_by_id(order_id: str, db:Session = Depends(get_db), current_user: d
 
 #get all data orders
 @router.get("/orders")
-def get_all_orders(db:Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    order = db.query(Order).all()
+def get_distinct_order_ids(db: Session = Depends(get_db)):
+    result = db.query(Order.order_id, Order.cust_name, Order.cust_address).distinct().all()
+    print("RAW RESULT:", result)  # Debug: lihat isi hasil query
 
-    return order
+    order_ids = [{"label": f"{row[0]} - {row[1]}", "value": row[0], "cust_name": row[1], "cust_address": row[2]} for row in result]
+    print("FORMATTED:", order_ids)  # Debug: lihat hasil akhir yang dikembalikan
+
+    return order_ids
 
 #update status order
 @router.put("/order/{order_id}/status")
@@ -70,3 +78,19 @@ def delete_order(order_id: str, db:Session = Depends(get_db), current_user: dict
     db.commit()
 
     return {"message": f"Order {order_id} deleted successfully"}
+
+@router.post("/order/split")
+def create_order_split(order: OrderCreate, db:Session = Depends(get_db)):
+    new_order_split = Order(
+        order_id = order.order_id,
+        item_name = order.item_name,
+        amount = order.amount,
+        qty = order.qty,
+        cust_name = order.cust_name,
+        cust_address = order.cust_address,
+        notes = order.notes,
+        status = order.status
+    )
+    db.add(new_order_split)
+    db.commit()
+    db.refresh(new_order_split)

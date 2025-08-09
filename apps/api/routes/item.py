@@ -1,24 +1,28 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from typing import Union
+from apps.database import get_db
+from apps.models.product import Product
+from apps.schemas.products import ProductCreate
 
 router = APIRouter()
 
-class requestBody(BaseModel): 
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
+@router.post("/items/create")
+def create_product(product: ProductCreate, db:Session = Depends(get_db)):
+    new_product = Product(
+        name = product.name,
+        price = product.price   ,
+        qty = product.qty,
+    )
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
 
+    return new_product
 
-@router.get("/")
-def read_root():
-    return {"Hello": "World"}
+@router.get("/items")
+def get_all_items(db:Session = Depends(get_db)):
+    product = db.query(Product).all()
 
-@router.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-
-@router.put("/items/{item_id}")
-def update_item(item_id: int, item: requestBody):
-    return {"item_id": item_id, "item name:": item.name, "item price:": item.price}
+    return product

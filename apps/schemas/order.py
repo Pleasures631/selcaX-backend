@@ -4,11 +4,14 @@ from datetime import datetime
 from apps.models.order import TypeEnum, MaterialEnum, StatusEnum
 
 class OrderCreate(BaseModel):
-    name: str
+    order_id: str
+    item_name: str
     amount: str
     qty: str
-    type: TypeEnum
-    material: MaterialEnum
+    status: StatusEnum
+    notes: str
+    cust_name: str
+    cust_address: str
 
 class UpdateOrderStatus(BaseModel):
     status: StatusEnum
